@@ -7,10 +7,13 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		KSP|Any CPU = KSP|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{EF0DCF13-9085-47FA-B1B3-55848AAAEE15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF0DCF13-9085-47FA-B1B3-55848AAAEE15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF0DCF13-9085-47FA-B1B3-55848AAAEE15}.KSP|Any CPU.ActiveCfg = KSP|Any CPU
+		{EF0DCF13-9085-47FA-B1B3-55848AAAEE15}.KSP|Any CPU.Build.0 = KSP|Any CPU
 		{EF0DCF13-9085-47FA-B1B3-55848AAAEE15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF0DCF13-9085-47FA-B1B3-55848AAAEE15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
