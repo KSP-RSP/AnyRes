@@ -9,7 +9,7 @@ namespace AnyRes
 	public class AnyRes : MonoBehaviour
 	{
 
-		public static Rect windowRect = new Rect(35, 99, 200, 160);
+		public static Rect windowRect = new Rect(35, 99, 200, 190);
 
 		public string xString = "1280";
 		public string yString = "720";
@@ -17,8 +17,9 @@ namespace AnyRes
 		public int x = 1280;
 		public int y = 720;
 
-		public bool enabled = false;
+		public bool windowEnabled = false;
 		public bool fullScreen = true;
+		public bool reloadScene = false;
 
 		private static ApplicationLauncherButton appLauncherButton;
 
@@ -29,13 +30,13 @@ namespace AnyRes
 			if (ApplicationLauncher.Ready && appLauncherButton == null) {
 
 				appLauncherButton = ApplicationLauncher.Instance.AddModApplication(
-					() => { toggleGUI(true); },
-					() => { toggleGUI(false); },
+					() => { windowEnabled = true; },
+					() => { windowEnabled = false; },
 					() => {},
 					() => {},
 					() => {},
 					() => {},
-					ApplicationLauncher.AppScenes.SPACECENTER,
+					ApplicationLauncher.AppScenes.ALWAYS,
 					(Texture)GameDatabase.Instance.GetTexture("AnyRes/textures/toolbar", false));
 				
 			}
@@ -46,15 +47,25 @@ namespace AnyRes
 
 			if (HighLogic.LoadedScene == GameScenes.SETTINGS) {
 
-				enabled = true;
+				windowEnabled = true;
+				windowRect.x = 35;
+				windowRect.y = 99;
+
+			} else if (HighLogic.LoadedScene == GameScenes.EDITOR) {
+
+				windowRect.x = 1008;
+				windowRect.y = 489;
 
 			}
 
 		}
 
-		void toggleGUI(bool state) {
+		public void OnDestroy ()
+		{
 
-			enabled = state;
+			//Destroy the button in order to create a new one.  It's required with multiple scene handling, unfortunately.
+			ApplicationLauncher.Instance.RemoveModApplication(appLauncherButton);
+			appLauncherButton = null;
 
 		}
 
@@ -62,19 +73,18 @@ namespace AnyRes
 
 			if ((GameSettings.MODIFIER_KEY.GetKey() ) && Input.GetKeyDown (KeyCode.A)) {
 
-				enabled = !enabled;
+				windowEnabled = !windowEnabled;
+				if (ApplicationLauncher.Ready) {
 
-			}
+					if (windowEnabled) {
 
-			if (ApplicationLauncher.Ready) {
+						appLauncherButton.SetTrue (true);
 
-				if (enabled) {
+					} else {
 
-					appLauncherButton.SetTrue (true);
+						appLauncherButton.SetFalse (true);
 
-				} else {
-
-					appLauncherButton.SetFalse (true);
+					}
 
 				}
 
@@ -84,13 +94,15 @@ namespace AnyRes
 //			Debug.Log ("X: " + windowRect.x.ToString ());
 //			Debug.Log ("Y: " + windowRect.y.ToString ());
 
+
+
 		}
 
 		void OnGUI() {
 
 			GUI.skin = HighLogic.Skin;
 
-			if (enabled) {
+			if (windowEnabled) {
 
 				windowRect = GUI.Window (09271, windowRect, GUIActive, "AnyRes");
 
@@ -105,7 +117,6 @@ namespace AnyRes
 				GUI.BringWindowToFront (09271);
 
 			}
-
 			GUILayout.BeginVertical ();
 			GUILayout.BeginHorizontal ();
 			GUILayout.Label ("Width: ");
@@ -118,6 +129,7 @@ namespace AnyRes
 			yString = Regex.Replace (yString, @"[^0-9]", "");
 			GUILayout.EndHorizontal ();
 			fullScreen = GUILayout.Toggle (fullScreen, "Fullscreen");
+			reloadScene = GUILayout.Toggle (reloadScene, "Reload scene");
 			if (GUILayout.Button("Set Screen Resolution")) {
 
 				if (xString != null && yString != null) {
@@ -132,6 +144,17 @@ namespace AnyRes
 						GameSettings.FULLSCREEN = fullScreen;
 						GameSettings.SaveSettings ();
 						Screen.SetResolution(x, y, fullScreen);
+						if (reloadScene) {
+
+							if (HighLogic.LoadedScene != GameScenes.LOADING) {
+								HighLogic.LoadScene (HighLogic.LoadedScene);
+							} else {
+
+								ScreenMessages.PostScreenMessage("You cannot reload the scene while loading the game!", 1);
+
+							}
+
+						}
 
 					} else {
 
