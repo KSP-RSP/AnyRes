@@ -32,9 +32,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Desktop 4\KSP_osx-3\UnityEngine.dll</HintPath>
-    </Reference>
     <Reference Include="KSPAssets">
       <HintPath>..\..\..\Desktop\KSPData\KSPAssets.dll</HintPath>
     </Reference>
@@ -49,6 +46,9 @@
     </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\Desktop\KSPData\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\Desktop\KSPData\UnityEngine.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
