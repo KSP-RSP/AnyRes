@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Text.RegularExpressions;  //Get Regex
+using KSP.UI.Screens;
 
 namespace AnyRes
 {
@@ -27,7 +28,7 @@ namespace AnyRes
 
 			//Thanks bananashavings http://forum.kerbalspaceprogram.com/index.php?/profile/156147-bananashavings/ - https://gist.github.com/bananashavings/e698f4359e1628b5d6ef
 			//Also thanks to Crzyrndm for the fix to that code!
-			if (ApplicationLauncher.Ready && appLauncherButton == null) {
+			if (appLauncherButton == null) {
 
 				appLauncherButton = ApplicationLauncher.Instance.AddModApplication(
 					() => { windowEnabled = true; },
