@@ -72,7 +72,7 @@ namespace AnyRes
 
 		void Update() {
 
-			if ((GameSettings.MODIFIER_KEY.GetKey() ) && Input.GetKeyDown (KeyCode.A)) {
+			if ((GameSettings.MODIFIER_KEY.GetKey() ) && Input.GetKeyDown (KeyCode.Slash)) {
 
 				windowEnabled = !windowEnabled;
 				if (ApplicationLauncher.Ready) {
