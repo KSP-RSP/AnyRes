@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Text.RegularExpressions;  //Get Regex
 using KSP.UI.Screens;
+using AnyRes.Util;
 
 namespace AnyRes
 {
@@ -24,7 +25,13 @@ namespace AnyRes
 
 		private static ApplicationLauncherButton appLauncherButton;
 
+		Presets presets;
+
 		void Start() {
+
+			Debug.Log ("[AnyRes] Loaded");
+
+			presets = gameObject.AddComponent<Presets> () as Presets;
 
 			//Thanks bananashavings http://forum.kerbalspaceprogram.com/index.php?/profile/156147-bananashavings/ - https://gist.github.com/bananashavings/e698f4359e1628b5d6ef
 			//Also thanks to Crzyrndm for the fix to that code!
@@ -33,11 +40,11 @@ namespace AnyRes
 				appLauncherButton = ApplicationLauncher.Instance.AddModApplication(
 					() => { windowEnabled = true; },
 					() => { windowEnabled = false; },
-					() => {},
-					() => {},
-					() => {},
-					() => {},
-					ApplicationLauncher.AppScenes.ALWAYS,
+					() => { },
+					() => { },
+					() => { },
+					() => { },
+					ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.VAB,
 					(Texture)GameDatabase.Instance.GetTexture("AnyRes/textures/toolbar", false));
 				
 			}
@@ -57,16 +64,22 @@ namespace AnyRes
 				windowRect.x = 1008;
 				windowRect.y = 489;
 
+			} else {
+
+				windowRect.x = 35;
+				windowRect.y = 99;
+
 			}
 
 		}
 
-		public void OnDestroy ()
+		public void OnDisable ()
 		{
 
 			//Destroy the button in order to create a new one.  It's required with multiple scene handling, unfortunately.
-			ApplicationLauncher.Instance.RemoveModApplication(appLauncherButton);
+			ApplicationLauncher.Instance.RemoveModApplication (appLauncherButton);
 			appLauncherButton = null;
+			Debug.Log ("[AnyRes] Remove application button");
 
 		}
 
@@ -77,14 +90,16 @@ namespace AnyRes
 				windowEnabled = !windowEnabled;
 				if (ApplicationLauncher.Ready) {
 
-					if (windowEnabled) {
+					if (appLauncherButton != null){
+						if (windowEnabled) {
 
-						appLauncherButton.SetTrue (true);
+							appLauncherButton.SetTrue (true);
 
-					} else {
+						} else {
 
-						appLauncherButton.SetFalse (true);
+							appLauncherButton.SetFalse (true);
 
+						}
 					}
 
 				}
@@ -112,6 +127,12 @@ namespace AnyRes
 		}
 
 		void GUIActive(int windowID) {
+
+			if (GUI.Button (new Rect (0, 0, 50, 25), "Presets")) {
+
+				presets.windowEnabled = !presets.windowEnabled;
+
+			}
 
 			if (HighLogic.LoadedScene == GameScenes.SETTINGS) {
 
@@ -145,6 +166,7 @@ namespace AnyRes
 						GameSettings.FULLSCREEN = fullScreen;
 						GameSettings.SaveSettings ();
 						Screen.SetResolution(x, y, fullScreen);
+						Debug.Log ("[AnyRes] Set screen resolution");
 						if (reloadScene) {
 
 							if (HighLogic.LoadedScene != GameScenes.LOADING) {
