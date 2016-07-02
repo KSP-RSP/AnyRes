@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace AnyRes.Util
@@ -116,7 +117,11 @@ namespace AnyRes.Util
 		void onLoad (int windowID) {
 
 			GUILayout.BeginScrollView (new Vector2 (0, 0));
-			foreach (string x in Directory.GetFiles(KSPUtil.ApplicationRootPath.Replace ("\\", "/") + "GameData/AnyRes/presets/", "*.cfg")) {
+			List<string> files = new List<string>(Directory.GetFiles(KSPUtil.ApplicationRootPath.Replace("\\", "/") + "GameData/AnyRes/presets/", "*.cfg"));
+			for (int i = files.Count - 1; i >= 0; --i)
+			{
+
+				string x = files[i];
 
 				ConfigNode config = ConfigNode.Load (x);
 				if (GUILayout.Button(config.GetValue("name"))) {
