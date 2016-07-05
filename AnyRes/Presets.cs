@@ -23,6 +23,9 @@ namespace AnyRes.Util
 		string newY = "720";
 		bool newFullscreen = false;
 
+		string[] files = Directory.GetFiles(KSPUtil.ApplicationRootPath.Replace("\\", "/") + "GameData/AnyRes/presets/", "*.cfg");
+		string file = "";
+
 		void Start () {
 
 			Debug.Log ("Started");
@@ -70,6 +73,7 @@ namespace AnyRes.Util
 			if (GUILayout.Button ("Load")) {
 
 				loadEnabled = !loadEnabled;
+				files = Directory.GetFiles(KSPUtil.ApplicationRootPath.Replace("\\", "/") + "GameData/AnyRes/presets/", "*.cfg");
 
 			}
 			GUILayout.EndVertical ();
@@ -116,14 +120,15 @@ namespace AnyRes.Util
 
 		void onLoad (int windowID) {
 
+
+
 			GUILayout.BeginScrollView (new Vector2 (0, 0));
-			List<string> files = new List<string>(Directory.GetFiles(KSPUtil.ApplicationRootPath.Replace("\\", "/") + "GameData/AnyRes/presets/", "*.cfg"));
-			for (int i = files.Count - 1; i >= 0; --i)
+			for (int i = files.Length - 1; i >= 0; --i)
 			{
+				
+				file = files[i];
 
-				string x = files[i];
-
-				ConfigNode config = ConfigNode.Load (x);
+				ConfigNode config = ConfigNode.Load (file);
 				if (GUILayout.Button(config.GetValue("name"))) {
 
 					int xVal;
