@@ -7,11 +7,11 @@ using AnyRes.Util;
 namespace AnyRes
 {
 
-	[KSPAddon(KSPAddon.Startup.EveryScene, false)]
+	[KSPAddon(KSPAddon.Startup.SpaceCentre, true)]
 	public class AnyRes : MonoBehaviour
 	{
 
-		public static Rect windowRect = new Rect(35, 99, 200, 190);
+		public static Rect anyresWinRect = new Rect(35, 99, 200, 190);
 
 		public string xString = "1280";
 		public string yString = "720";
@@ -39,7 +39,7 @@ namespace AnyRes
 
 				appLauncherButton = ApplicationLauncher.Instance.AddModApplication(
 					() => { windowEnabled = true; },
-					() => { windowEnabled = false; },
+					() => { presets.newEnabled = false; presets.loadEnabled = false; presets.windowEnabled = false; windowEnabled = false; },
 					() => { },
 					() => { },
 					() => { },
@@ -48,30 +48,33 @@ namespace AnyRes
 					(Texture)GameDatabase.Instance.GetTexture("AnyRes/textures/toolbar", false));
 				
 			}
-
-			xString = GameSettings.SCREEN_RESOLUTION_WIDTH.ToString ();
+            Debug.Log("[AnyRes] 1");
+            
+            xString = GameSettings.SCREEN_RESOLUTION_WIDTH.ToString ();
 			yString = GameSettings.SCREEN_RESOLUTION_HEIGHT.ToString ();
 			fullScreen = GameSettings.FULLSCREEN;
+            Debug.Log("[AnyRes] 2");
 
-			if (HighLogic.LoadedScene == GameScenes.SETTINGS) {
+            if (HighLogic.LoadedScene == GameScenes.SETTINGS) {
 
 				windowEnabled = true;
-				windowRect.x = 35;
-				windowRect.y = 99;
+				anyresWinRect.x = 35;
+				anyresWinRect.y = 99;
 
 			} else if (HighLogic.LoadedScene == GameScenes.EDITOR) {
 
-				windowRect.x = 1008;
-				windowRect.y = 489;
+				anyresWinRect.x = 1008;
+				anyresWinRect.y = 489;
 
 			} else {
 
-				windowRect.x = 35;
-				windowRect.y = 99;
+				anyresWinRect.x = 35;
+				anyresWinRect.y = 99;
 
 			}
+            DontDestroyOnLoad(this);
 
-		}
+        }
 
 		public void OnDisable ()
 		{
@@ -120,7 +123,7 @@ namespace AnyRes
 
 			if (windowEnabled) {
 
-				windowRect = GUI.Window (09271, windowRect, GUIActive, "AnyRes");
+				anyresWinRect = GUI.Window (09271, anyresWinRect, GUIActive, "AnyRes");
 
 			}
 
@@ -131,8 +134,17 @@ namespace AnyRes
 			if (GUI.Button (new Rect (0, 0, 50, 25), "Presets")) {
 
 				presets.windowEnabled = !presets.windowEnabled;
-
-			}
+                if (!presets.windowEnabled)
+                {
+                    presets.loadEnabled = false;
+                }
+                else
+                {
+                    presets.windowRect = new Rect(anyresWinRect.xMin + anyresWinRect.width, anyresWinRect.yMin, 200, 100);
+                    presets.loadRect = new Rect(presets.windowRect.xMin + presets.windowRect.width, anyresWinRect.yMin, 200, 400);
+                    presets.newRect = new Rect(presets.windowRect.xMin + presets.windowRect.width, anyresWinRect.yMin, 200, 230);
+                }
+            }
 
 			if (HighLogic.LoadedScene == GameScenes.SETTINGS) {
 
