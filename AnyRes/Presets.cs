@@ -9,14 +9,16 @@ namespace AnyRes.Util
 	
 	public class Presets : MonoBehaviour
 	{
+ 
+            
 
 		public bool windowEnabled = false;
-		bool newEnabled = false;
-		bool loadEnabled = false;
+		public bool newEnabled = false;
+		public bool loadEnabled = false;
 
 		public Rect windowRect = new Rect(30, 30, 200, 100);
-		Rect newRect = new Rect(30, 30, 200, 230);
-		Rect loadRect = new Rect(30, 30, 200, 400);
+		public Rect newRect = new Rect(30, 30, 200, 230);
+		public Rect loadRect = new Rect(30, 30, 200, 400);
 
 		string newName = "Name";
 		string newX = "1280";
@@ -39,7 +41,7 @@ namespace AnyRes.Util
 		}
 
 		void OnGUI () {
-
+            
 			GUI.skin = HighLogic.Skin;
 
 			if (windowEnabled) {
@@ -68,13 +70,15 @@ namespace AnyRes.Util
 			if (GUILayout.Button ("New")) {
 
 				newEnabled = !newEnabled;
+                loadEnabled = false;
 
-			}
+
+            }
 			if (GUILayout.Button ("Load")) {
 
 				loadEnabled = !loadEnabled;
 				files = Directory.GetFiles(KSPUtil.ApplicationRootPath.Replace("\\", "/") + "GameData/AnyRes/presets/", "*.cfg");
-
+                newEnabled = false;
 			}
 			GUILayout.EndVertical ();
 
