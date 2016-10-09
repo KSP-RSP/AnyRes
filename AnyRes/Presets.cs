@@ -58,7 +58,7 @@ namespace AnyRes.Util
 
 			if (loadEnabled) {
 
-				loadRect = GUI.Window (09273, loadRect, onLoad, "Load Preset");
+				loadRect = GUI.Window (09274, loadRect, onLoad, "Load Preset");
 
 			}
 

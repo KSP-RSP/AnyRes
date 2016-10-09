@@ -7,7 +7,7 @@ using AnyRes.Util;
 namespace AnyRes
 {
 
-	[KSPAddon(KSPAddon.Startup.SpaceCentre, true)]
+	[KSPAddon(KSPAddon.Startup.EveryScene, false)]
 	public class AnyRes : MonoBehaviour
 	{
 
@@ -23,72 +23,81 @@ namespace AnyRes
 		public bool fullScreen = true;
 		public bool reloadScene = false;
 
-		private static ApplicationLauncherButton appLauncherButton;
+		private static ApplicationLauncherButton appLauncherButton = null;
 
 		Presets presets;
 
+        
+
 		void Start() {
 
-			Debug.Log ("[AnyRes] Loaded");
+            if (HighLogic.LoadedScene == GameScenes.SETTINGS)
+            {
+
+                windowEnabled = true;
+                anyresWinRect.x = 7;
+                anyresWinRect.y = 231;
+
+            }
+            else if (HighLogic.LoadedScene == GameScenes.EDITOR)
+            {
+
+                anyresWinRect.x = Screen.width - 272;
+                anyresWinRect.y = Screen.height - 231;
+
+            }
+
+            Debug.Log ("[AnyRes] Loaded");
 
 			presets = gameObject.AddComponent<Presets> () as Presets;
 
-			//Thanks bananashavings http://forum.kerbalspaceprogram.com/index.php?/profile/156147-bananashavings/ - https://gist.github.com/bananashavings/e698f4359e1628b5d6ef
-			//Also thanks to Crzyrndm for the fix to that code!
-			if (appLauncherButton == null) {
-
-				appLauncherButton = ApplicationLauncher.Instance.AddModApplication(
-					() => { windowEnabled = true; },
-					() => { presets.newEnabled = false; presets.loadEnabled = false; presets.windowEnabled = false; windowEnabled = false; },
-					() => { },
-					() => { },
-					() => { },
-					() => { },
-					ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.VAB,
-					(Texture)GameDatabase.Instance.GetTexture("AnyRes/textures/toolbar", false));
-				
-			}
-            Debug.Log("[AnyRes] 1");
+			
+            //Debug.Log("[AnyRes] 1");
             
             xString = GameSettings.SCREEN_RESOLUTION_WIDTH.ToString ();
 			yString = GameSettings.SCREEN_RESOLUTION_HEIGHT.ToString ();
 			fullScreen = GameSettings.FULLSCREEN;
-            Debug.Log("[AnyRes] 2");
+            //Debug.Log("[AnyRes] 2");
 
-            if (HighLogic.LoadedScene == GameScenes.SETTINGS) {
-
-				windowEnabled = true;
-				anyresWinRect.x = 35;
-				anyresWinRect.y = 99;
-
-			} else if (HighLogic.LoadedScene == GameScenes.EDITOR) {
-
-				anyresWinRect.x = 1008;
-				anyresWinRect.y = 489;
-
-			} else {
-
-				anyresWinRect.x = 35;
-				anyresWinRect.y = 99;
-
-			}
-            DontDestroyOnLoad(this);
+            
+            //DontDestroyOnLoad(this);
 
         }
 
 		public void OnDisable ()
 		{
 
-			//Destroy the button in order to create a new one.  It's required with multiple scene handling, unfortunately.
-			ApplicationLauncher.Instance.RemoveModApplication (appLauncherButton);
-			appLauncherButton = null;
-			Debug.Log ("[AnyRes] Remove application button");
+            //Destroy the button in order to create a new one.  It's required with multiple scene handling, unfortunately.
+            if (appLauncherButton != null)
+            {
+                ApplicationLauncher.Instance.RemoveModApplication(appLauncherButton);
+                appLauncherButton = null;
+                Debug.Log("[AnyRes] Remove application button");
+            }
 
 		}
 
 		void Update() {
 
-			if ((GameSettings.MODIFIER_KEY.GetKey() ) && Input.GetKeyDown (KeyCode.Slash)) {
+            //Thanks bananashavings http://forum.kerbalspaceprogram.com/index.php?/profile/156147-bananashavings/ - https://gist.github.com/bananashavings/e698f4359e1628b5d6ef
+            //Also thanks to Crzyrndm for the fix to that code!
+            //(HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.EDITOR)
+            if (appLauncherButton == null && (HighLogic.LoadedScene == GameScenes.TRACKSTATION || HighLogic.LoadedScene == GameScenes.SPACECENTER || HighLogic.LoadedScene == GameScenes.FLIGHT || HighLogic.LoadedScene == GameScenes.EDITOR))
+            {
+
+                appLauncherButton = ApplicationLauncher.Instance.AddModApplication(
+                    () => { windowEnabled = true; },
+                    () => { presets.newEnabled = false; presets.loadEnabled = false; presets.windowEnabled = false; windowEnabled = false; },
+                    () => { },
+                    () => { },
+                    () => { },
+                    () => { },
+                    ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW | ApplicationLauncher.AppScenes.SPACECENTER | ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.TRACKSTATION | ApplicationLauncher.AppScenes.VAB,
+                    (Texture)GameDatabase.Instance.GetTexture("AnyRes/textures/toolbar", false));
+
+            }
+
+            if ((GameSettings.MODIFIER_KEY.GetKey() ) && Input.GetKeyDown (KeyCode.Slash)) {
 
 				windowEnabled = !windowEnabled;
 				if (ApplicationLauncher.Ready) {
@@ -108,14 +117,21 @@ namespace AnyRes
 				}
 
 			}
+            
+            presets.windowRect.x = anyresWinRect.xMin + anyresWinRect.width;
+            presets.windowRect.y = anyresWinRect.yMin;
+            presets.loadRect.x = presets.windowRect.xMin + presets.windowRect.width;
+            presets.loadRect.y = presets.windowRect.yMin;
+            presets.newRect.x = presets.windowRect.xMin + presets.windowRect.width;
+            presets.newRect.y = anyresWinRect.yMin;
 
-//			Meant for debugging
-//			Debug.Log ("X: " + windowRect.x.ToString ());
-//			Debug.Log ("Y: " + windowRect.y.ToString ());
+            //			Meant for debugging
+            //			Debug.Log ("X: " + anyresWinRect.x.ToString ());
+            //			Debug.Log ("Y: " + anyresWinRect.y.ToString ());
 
 
 
-		}
+        }
 
 		void OnGUI() {
 
@@ -140,9 +156,16 @@ namespace AnyRes
                 }
                 else
                 {
-                    presets.windowRect = new Rect(anyresWinRect.xMin + anyresWinRect.width, anyresWinRect.yMin, 200, 100);
-                    presets.loadRect = new Rect(presets.windowRect.xMin + presets.windowRect.width, anyresWinRect.yMin, 200, 400);
-                    presets.newRect = new Rect(presets.windowRect.xMin + presets.windowRect.width, anyresWinRect.yMin, 200, 230);
+                    //presets.windowRect = new Rect(anyresWinRect.xMin + anyresWinRect.width, anyresWinRect.yMin, 200, 100);
+                    presets.windowRect.x = anyresWinRect.xMin + anyresWinRect.width;
+                    presets.windowRect.y = anyresWinRect.yMin;
+                    //presets.loadRect = new Rect(presets.windowRect.xMin + presets.windowRect.width, anyresWinRect.yMin, 200, 400);
+                    presets.loadRect.x = presets.windowRect.xMin + presets.windowRect.width;
+                    presets.loadRect.y = presets.windowRect.yMin;
+                    //presets.newRect = new Rect(presets.windowRect.xMin + presets.windowRect.width, anyresWinRect.yMin, 200, 230);
+                    presets.newRect.x = presets.windowRect.xMin + presets.windowRect.width;
+                    presets.newRect.y = anyresWinRect.yMin;
+
                 }
             }
 
